@@ -1,0 +1,85 @@
+{% extends 'navi.html' %}
+{% block title %}PDF Convertor{% endblock %}
+{% block content %}
+
+<!-- EDIT BUTTON NAMES HERE: Add/modify button names in the list below -->
+{% set button_names = [
+    'Convert PDF',
+    'Extract Text',
+    'Merge PDFs',
+    'Split PDF',
+    'Compress PDF',
+    'Add Watermark',
+    'Remove Pages',
+    'Rotate PDF',
+    'Convert to Image',
+    'OCR Text',
+    'Add Password',
+    'Remove Password',
+    'Reorder Pages',
+    'Extract Images',
+    'Stamp PDF',
+    'Sign Document'
+] %}
+
+<div class="button-grid" id="buttonGrid">
+
+{% for j in range(1,6) %}
+  <div class="row">
+
+    {% for i in range(1,4) %}
+    
+    <form action="/task{{ j }}_{{ i }}" method="POST" style="display:contents;">
+      <button type="submit" class="but" data-index="{{ (j-1)*3 + (i-1) }}">{{ button_names[(j-1)*3 + (i-1)] }}</button>
+    </form>
+    
+    {% endfor %}
+  </div>
+
+{% endfor %}
+
+</div>
+
+<script>
+// Use Intersection Observer for smooth fade in/out effect
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            // Row is in viewport
+            const rect = entry.target.getBoundingClientRect();
+            const screenCenter = window.innerHeight / 2;
+            const rowCenter = rect.top + rect.height / 2;
+            const distance = Math.abs(rowCenter - screenCenter);
+            
+            // Calculate opacity: fully visible when centered
+            const opacity = Math.max(0, 1 - (Math.abs(distance) / window.innerHeight));
+            entry.target.style.opacity = opacity;
+        } else {
+            // Row is out of viewport
+            entry.target.style.opacity = 0;
+        }
+    });
+}, {
+    threshold: 0 // Trigger when any part is visible
+});
+
+// Observe all rows
+document.querySelectorAll('.row').forEach(row => {
+    observer.observe(row);
+});
+
+// Also update on scroll for smooth transitions
+window.addEventListener('scroll', () => {
+    document.querySelectorAll('.row').forEach(row => {
+        const rect = row.getBoundingClientRect();
+        const screenCenter = window.innerHeight / 2;
+        const rowCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(rowCenter - screenCenter);
+        
+        const opacity = Math.max(0, 1 - (Math.abs(distance) / window.innerHeight));
+        row.style.opacity = opacity;
+        row.style.pointerEvents = (opacity > 0.1) ? 'auto' : 'none';
+    });
+}, { passive: true });
+</script>
+{% endblock %}
